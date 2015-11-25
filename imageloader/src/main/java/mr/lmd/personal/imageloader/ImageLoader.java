@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 /**
+ * 还未实现：网络加载图片 以及 硬盘缓存
  * 图片加载类
  * Created by LinMingDao on 2015/11/23.
  */
