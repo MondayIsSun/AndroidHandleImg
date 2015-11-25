@@ -28,7 +28,7 @@ public class ImageLoader {
     private LruCache<String, Bitmap> mLruCache;
 
     /**
-     * 采用线程池去处理远程下载任务，而不是使用线程
+     * 采用线程池去处理远程下载任务，而不是使用线程（提高线程的使用效率）
      */
     private ExecutorService mThreadPool;
     private static final int DEFAULT_THREAD_COUNT = 1;//线程池的线程数量
@@ -59,7 +59,6 @@ public class ImageLoader {
      * 改Handler用于通知线程更新View
      */
     private Handler mUIHandler;
-
 
     private Semaphore mSemaphorePoolThreadHandler = new Semaphore(0);
 
