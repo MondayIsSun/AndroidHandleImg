@@ -7,6 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 
 /**
@@ -93,9 +97,9 @@ public class BitmapCompressUtils {
      * 通过反射机制处理兼容性问题
      * 通过反射机制获取ImageView的某个属性值
      *
-     * @param object
-     * @param fieldName
-     * @return
+     * @param object    控件对象
+     * @param fieldName 字段名
+     * @return 该字段的值
      */
     private static int getImageViewFieldValue(Object object, String fieldName) {
         int value = 0;
@@ -136,10 +140,10 @@ public class BitmapCompressUtils {
     /**
      * 根据图片需要显示的宽个高对图片进行压缩
      *
-     * @param path
-     * @param width
-     * @param height
-     * @return
+     * @param path   图片的路径
+     * @param width  控件的宽
+     * @param height 控件的高
+     * @return 压缩后的图片
      */
     private Bitmap decodeSampledBitmapFromPath(String path, int width, int height) {
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -150,5 +154,40 @@ public class BitmapCompressUtils {
         options.inJustDecodeBounds = false;
         Bitmap bitmap = BitmapFactory.decodeFile(path, options);
         return bitmap;
+    }
+
+    //将图片从本地读到内存时,进行压缩 ,即图片从File形式变为Bitmap形式
+    public Bitmap compressBmpFromBmp(Bitmap bmp) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int options = 100;
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        while (baos.toByteArray().length / 1024 > 100) {
+            baos.reset();
+            options -= 10;
+            bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
+        }
+        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
+        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);
+        return bitmap;
+    }
+
+    //将图片保存到本地时进行压缩, 即将图片从Bitmap形式变为File形式时进行压缩
+    public void compressBmpToFile(Bitmap bmp, File file) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int options = 80;//个人喜欢从80开始,
+        bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
+        while (baos.toByteArray().length / 1024 > 100) {
+            baos.reset();
+            options -= 10;
+            bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(baos.toByteArray());
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
