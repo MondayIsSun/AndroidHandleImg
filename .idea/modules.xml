@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/AndroidHandleImg.iml" filepath="$PROJECT_DIR$/AndroidHandleImg.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/imageloader/imageloader.iml" filepath="$PROJECT_DIR$/imageloader/imageloader.iml" />
+      <module fileurl="file://$PROJECT_DIR$/loadhdimage/loadhdimage.iml" filepath="$PROJECT_DIR$/loadhdimage/loadhdimage.iml" />
     </modules>
   </component>
 </project>
