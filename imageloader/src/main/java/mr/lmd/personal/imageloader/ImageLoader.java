@@ -1,19 +1,28 @@
 package mr.lmd.personal.imageloader;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
 
+import java.io.File;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 /**
- * 还未实现：网络加载图片 以及 硬盘缓存
+ * 还未实现：DiskLruCache硬盘缓存
+ * 已经粗略实现硬盘缓存
+ * 已经实现网络加载图片
  * 图片加载类功能：
  * 1、单例获取实例
  * 2、线程池技术 + 任务队列 异步加载图片 ——> 多线程需要做同步处理
@@ -21,6 +30,8 @@ import java.util.concurrent.Semaphore;
  * Created by LinMingDao on 2015/11/23.
  */
 public class ImageLoader {
+
+    private String TAG = ImageLoader.class.getSimpleName();
 
     private LruCache<String, Bitmap> mLruCache;//避免OOM，内存缓存Bitmap的核心类
 
@@ -136,7 +147,7 @@ public class ImageLoader {
      * @param path      图片获取到路径
      * @param imageView 要设置的控件
      */
-    public void loadImage(final String path, final ImageView imageView) {
+    public void loadImage(final String path, final ImageView imageView, final boolean isFromNet) {
 
         //为控件设置一个tag
         imageView.setTag(path);
@@ -160,21 +171,26 @@ public class ImageLoader {
         }
 
         //2、根据path在LruCache当中获取Bitmap
-        Bitmap bm = getBitmapFromCache(path);
+        Bitmap bm = getBitmapFromLruCache(path);
+
+        Log.d("ELSeed", "getBitmapFromLruCache(path) = " + bm);
 
         //3、为ImageView设置图片
-        if (null != bm) {
+        if (null != bm) {//内存缓存中有该图片
             refreshBitmap(path, imageView, bm);
-        } else {
+        } else {//本地加载 ——> 无 ——> 网络加载
+            addTask(buildTask(path, imageView, isFromNet));
+            /*
             addTask(new Runnable() {//没有缓存图片，需要异步加载图片
                 @Override
                 public void run() {
                     Bitmap bm = BitmapCompressUtils.getInstance().doCompress(imageView, path);//1、图片压缩
-                    addBitmapToCache(path, bm);//2、把图片加入到LruCache进行缓存
+                    addBitmapToLruCache(path, bm);//2、把图片加入到LruCache进行缓存
                     refreshBitmap(path, imageView, bm);//3、为ImageView设置图片
                     mSemaphoreThreadPool.release();
                 }
             });
+            */
         }
     }
 
@@ -232,7 +248,7 @@ public class ImageLoader {
      * @return 返回到Bitmap对象（需要判空处理）
      */
 
-    private Bitmap getBitmapFromCache(String path) {
+    private Bitmap getBitmapFromLruCache(String path) {
         return mLruCache.get(path);
     }
 
@@ -242,11 +258,148 @@ public class ImageLoader {
      * @param path 图片的key
      * @param bm   图片本身
      */
-    private void addBitmapToCache(String path, Bitmap bm) {
-        if (null == getBitmapFromCache(path)) {
+    private void addBitmapToLruCache(String path, Bitmap bm) {
+        if (null == getBitmapFromLruCache(path)) {
             if (null != bm) {
                 mLruCache.put(path, bm);
             }
         }
+    }
+
+    /************************************************************************************************************************************/
+
+    /**
+     * 加入网络操作
+     */
+
+    private boolean isDiskCacheEnable = true;
+
+    /**
+     * 获得缓存图片的地址
+     *
+     * @param context
+     * @param uniqueName
+     * @return
+     */
+    public File getDiskCacheDir(Context context, String uniqueName) {
+        String cachePath;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            cachePath = context.getExternalCacheDir().getPath();
+        } else {
+            cachePath = context.getCacheDir().getPath();
+        }
+        return new File(cachePath + File.separator + uniqueName);
+    }
+
+    /**
+     * 利用签名辅助类，将字符串字节数组
+     *
+     * @param str
+     * @return
+     */
+    public String md5(String str) {
+        byte[] digest;
+        try {
+            MessageDigest md = MessageDigest.getInstance("md5");
+            digest = md.digest(str.getBytes());
+            return bytes2hex02(digest);
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 方式二
+     *
+     * @param bytes
+     * @return
+     */
+    public String bytes2hex02(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        String tmp;
+        for (byte b : bytes) {
+            // 将每个字节与0xFF进行与运算，然后转化为10进制，然后借助于Integer再转化为16进制
+            tmp = Integer.toHexString(0xFF & b);
+            if (tmp.length() == 1) {// 每个字节8为，转为16进制标志，2个16进制位
+                tmp = "0" + tmp;
+            }
+            sb.append(tmp);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 根据传入的参数，新建一个任务
+     *
+     * @param path
+     * @param imageView
+     * @param isFromNet
+     * @return
+     */
+    private Runnable buildTask(final String path, final ImageView imageView, final boolean isFromNet) {
+        return new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bm = null;
+                if (isFromNet) {
+                    File file = getDiskCacheDir(imageView.getContext(), md5(path));
+                    if (file.exists()) {//如果在缓存文件中发现
+                        Log.e("ELSeed", "find image :" + path + " in disk cache .");
+                        bm = loadImageFromLocal(file.getAbsolutePath(), imageView);
+                    } else {
+                        Log.e("ELSeed", "not find image :" + path + " in disk cache .");
+                        if (isDiskCacheEnable) {//检测是否开启硬盘缓存
+                            boolean downloadState = DownloadImgUtils.downloadImgByUrl(path, file);
+                            if (downloadState) {//如果下载成功
+                                Log.e("ELSeed", "download image :" + path + " to disk cache . path is " + file.getAbsolutePath());
+                                bm = loadImageFromLocal(file.getAbsolutePath(), imageView);
+                            }
+                        } else {//直接从网络加载
+                            Log.e("ELSeed", "load image :" + path + " to memory.");
+                            bm = DownloadImgUtils.downloadImgByUrl(path, imageView);
+                        }
+                    }
+                } else {
+                    bm = loadImageFromLocal(path, imageView);
+                }
+                // 3、把图片加入到缓存
+                addBitmapToLruCache(path, bm);
+                refreshBitmap(path, imageView, bm);
+                mSemaphoreThreadPool.release();
+            }
+        };
+    }
+
+    private Bitmap loadImageFromLocal(final String path, final ImageView imageView) {
+        Bitmap bm;
+        // 加载图片
+        // 图片的压缩
+        // 1、获得图片需要显示的大小
+        BitmapCompressUtils.ViewSize imageSize = BitmapCompressUtils.getInstance().calculateImageViewSize(imageView);
+        // 2、压缩图片
+        bm = decodeSampledBitmapFromPath(path, imageSize.width, imageSize.height);
+        return bm;
+    }
+
+    /**
+     * 根据图片需要显示的宽和高对图片进行压缩
+     *
+     * @param path
+     * @param width
+     * @param height
+     * @return
+     */
+    private Bitmap decodeSampledBitmapFromPath(String path, int width, int height) {
+        // 获得图片的宽和高，并不把图片加载到内存中
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, options);
+        options.inSampleSize = BitmapCompressUtils.getInstance().calculateInSampleSize(options, width, height);
+        // 使用获得到的InSampleSize再次解析图片
+        options.inJustDecodeBounds = false;
+        Bitmap bitmap = BitmapFactory.decodeFile(path, options);
+        return bitmap;
     }
 }

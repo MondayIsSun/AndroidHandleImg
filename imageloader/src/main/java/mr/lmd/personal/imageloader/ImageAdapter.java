@@ -66,7 +66,7 @@ public class ImageAdapter extends BaseAdapter {
         viewHolder.mSelect.setImageResource(R.drawable.picture_unselected);
         viewHolder.mImg.setColorFilter(null);
 
-        ImageLoader.getInstance(3, ImageLoader.Type.LIFO).loadImage(mDirPath + "/" + mImgPaths.get(position), viewHolder.mImg);
+        ImageLoader.getInstance(3, ImageLoader.Type.LIFO).loadImage(mDirPath + "/" + mImgPaths.get(position), viewHolder.mImg,false);
         final String filePath = mDirPath + "/" + mImgPaths.get(position);
         viewHolder.mImg.setOnClickListener(new View.OnClickListener() {
             @Override

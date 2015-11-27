@@ -19,26 +19,28 @@ public class LargeImageViewSimpleBak extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_large_image_view);
 
-//        mImageView = (ImageView) findViewById(R.id.id_imageview);
-//        try {
-//            InputStream inputStream = getAssets().open("tangyan.jpg");
-//
-//            //获得图片的宽、高
-//            BitmapFactory.Options tmpOptions = new BitmapFactory.Options();
-//            tmpOptions.inJustDecodeBounds = true;
-//            BitmapFactory.decodeStream(inputStream, null, tmpOptions);
-//            int width = tmpOptions.outWidth;
-//            int height = tmpOptions.outHeight;
-//
-//            //设置显示图片的中心区域
-//            BitmapRegionDecoder bitmapRegionDecoder = BitmapRegionDecoder.newInstance(inputStream, false);
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            options.inPreferredConfig = Bitmap.Config.RGB_565;
-//            Bitmap bitmap = bitmapRegionDecoder.decodeRegion(new Rect(width / 2 - 100, height / 2 - 100, width / 2 + 100, height / 2 + 100), options);
-//            mImageView.setImageBitmap(bitmap);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        mImageView = (ImageView) findViewById(R.id.id_image_view);
+        try {
+            InputStream inputStream = getAssets().open("tangyan.jpg");
+
+            //获得图片的宽、高——>并不加载图片到内存
+            BitmapFactory.Options tmpOptions = new BitmapFactory.Options();
+            tmpOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(inputStream, null, tmpOptions);
+            int width = tmpOptions.outWidth;
+            int height = tmpOptions.outHeight;
+
+            //设置显示图片的中心区域
+            BitmapRegionDecoder bitmapRegionDecoder = BitmapRegionDecoder.newInstance(inputStream, false);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
+            Bitmap bitmap = bitmapRegionDecoder.decodeRegion(
+                    new Rect(width / 2 - 100, height / 2 - 100, width / 2 + 100, height / 2 + 100),
+                    options);
+            mImageView.setImageBitmap(bitmap);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

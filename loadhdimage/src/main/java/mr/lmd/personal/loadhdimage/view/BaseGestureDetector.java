@@ -19,7 +19,7 @@ public abstract class BaseGestureDetector {
         mContext = context;
     }
 
-    public boolean onToucEvent(MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event) {
         if (!mGestureInProgress) {
             handleStartProgressEvent(event);
         } else {

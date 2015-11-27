@@ -1,4 +1,4 @@
-package mr.lmd.personal.imageloader;
+package mr.lmd.personal.imageloader.noUse;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

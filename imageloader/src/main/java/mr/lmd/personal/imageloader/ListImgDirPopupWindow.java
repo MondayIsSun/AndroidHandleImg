@@ -144,7 +144,7 @@ public class ListImgDirPopupWindow extends PopupWindow {
             viewHolder.mImg.setImageResource(R.drawable.pictures_no);
 
             //复用View时刷新View的数据
-            ImageLoader.getInstance().loadImage(folderBean.getFirstImgPath(), viewHolder.mImg);
+            ImageLoader.getInstance().loadImage(folderBean.getFirstImgPath(), viewHolder.mImg,false);
             viewHolder.mDirCount.setText(folderBean.getCount() + "");
             viewHolder.mDirName.setText(folderBean.getName());
 

@@ -42,7 +42,7 @@ public class BitmapCompressUtils {
         return compressedBmp;
     }
 
-    private class ViewSize {
+    public class ViewSize {
         int width;
         int height;
     }
@@ -53,7 +53,7 @@ public class BitmapCompressUtils {
      * @param imageView 要显示图片的控件
      * @return 图片压缩的宽和高
      */
-    private ViewSize calculateImageViewSize(View imageView) {
+    public ViewSize calculateImageViewSize(View imageView) {
         DisplayMetrics displayMetrics = imageView.getContext().getResources().getDisplayMetrics();
         ViewSize viewSize = new ViewSize();
 
@@ -124,7 +124,7 @@ public class BitmapCompressUtils {
      * @param reqHeight 需求的高度
      * @return 计算出的Sample值
      */
-    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    public int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         int width = options.outWidth;
         int height = options.outHeight;
         int sampleSize = 1;
