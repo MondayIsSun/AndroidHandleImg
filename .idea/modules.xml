@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/AndroidHandleImg.iml" filepath="$PROJECT_DIR$/AndroidHandleImg.iml" />
       <module fileurl="file://$PROJECT_DIR$/imageloader/imageloader.iml" filepath="$PROJECT_DIR$/imageloader/imageloader.iml" />
       <module fileurl="file://$PROJECT_DIR$/loadhdimage/loadhdimage.iml" filepath="$PROJECT_DIR$/loadhdimage/loadhdimage.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xysimageop1/xysimageop1.iml" filepath="$PROJECT_DIR$/xysimageop1/xysimageop1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xysimageop2/xysimageop2.iml" filepath="$PROJECT_DIR$/xysimageop2/xysimageop2.iml" />
     </modules>
   </component>
 </project>

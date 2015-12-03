@@ -1,1 +1,1 @@
-include ':imageloader', ':loadhdimage'
+include ':imageloader', ':loadhdimage', ':xysimageop1', ':xysimageop2'

@@ -12,6 +12,8 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/imageloader" />
             <option value="$PROJECT_DIR$/loadhdimage" />
+            <option value="$PROJECT_DIR$/xysimageop1" />
+            <option value="$PROJECT_DIR$/xysimageop2" />
           </set>
         </option>
       </GradleProjectSettings>
