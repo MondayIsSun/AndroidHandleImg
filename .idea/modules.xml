@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AndroidHandleImg.iml" filepath="$PROJECT_DIR$/AndroidHandleImg.iml" />
+      <module fileurl="file://$PROJECT_DIR$/disklrucachedemo/disklrucachedemo.iml" filepath="$PROJECT_DIR$/disklrucachedemo/disklrucachedemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/imageloader/imageloader.iml" filepath="$PROJECT_DIR$/imageloader/imageloader.iml" />
       <module fileurl="file://$PROJECT_DIR$/loadhdimage/loadhdimage.iml" filepath="$PROJECT_DIR$/loadhdimage/loadhdimage.iml" />
       <module fileurl="file://$PROJECT_DIR$/xysimageop1/xysimageop1.iml" filepath="$PROJECT_DIR$/xysimageop1/xysimageop1.iml" />

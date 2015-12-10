@@ -1,1 +1,1 @@
-include ':imageloader', ':loadhdimage', ':xysimageop1', ':xysimageop2'
+include ':imageloader', ':loadhdimage', ':xysimageop1', ':xysimageop2', ':disklrucachedemo'
