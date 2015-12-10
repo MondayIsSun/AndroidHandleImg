@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
     private TextView tv;
     private ImageView im;
     private DiskLruCache mDiskLruCache;
-    private String IMGIP = "http://f.hiphotos.baidu.com/image/pic/item/58ee3d6d55fbb2fbfe951a134d4a20a44623dc71.jpg";
+    private String IMG_IP = "http://f.hiphotos.baidu.com/image/pic/item/58ee3d6d55fbb2fbfe951a134d4a20a44623dc71.jpg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +44,13 @@ public class MainActivity extends Activity {
     private void initDiskLruCache() {
         mDiskLruCache = null;
         try {
+            //初始化缓存路径
             File cacheDir = getDiskCacheDir(this, "bitmap");
             if (!cacheDir.exists()) {
                 cacheDir.mkdirs();
             }
-            mDiskLruCache = DiskLruCache.open(cacheDir, getAppVersion(this), 1,
-                    10 * 1024 * 1024);
+            //初始化DiskLruCache
+            mDiskLruCache = DiskLruCache.open(cacheDir, getAppVersion(this), 1, 10 * 1024 * 1024);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -95,7 +96,7 @@ public class MainActivity extends Activity {
     }
 
     private void clearCache() {
-        String key = MD5Util.md5(IMGIP);
+        String key = MD5Util.md5(IMG_IP);
         try {
             mDiskLruCache.remove(key);
         } catch (IOException e) {
@@ -104,7 +105,7 @@ public class MainActivity extends Activity {
     }
 
     private void showImg() {
-        String key = MD5Util.md5(IMGIP);
+        String key = MD5Util.md5(IMG_IP);
         try {
             DiskLruCache.Snapshot snapShot = mDiskLruCache.get(key);
             if (snapShot != null) {
@@ -119,15 +120,14 @@ public class MainActivity extends Activity {
 
     private void cacheImg() {
         new Thread(new Runnable() {
-
             @Override
             public void run() {
-                String key = MD5Util.md5(IMGIP);
+                String key = MD5Util.md5(IMG_IP);
                 try {
                     DiskLruCache.Editor editor = mDiskLruCache.edit(key);
                     if (editor != null) {
                         OutputStream out = editor.newOutputStream(0);
-                        if (downloadImg(IMGIP, out)) {
+                        if (downloadImg(IMG_IP, out)) {//加载网络图片
                             //提交
                             editor.commit();
                         } else {
@@ -160,8 +160,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private boolean downloadImg(final String urlStr,
-                                final OutputStream outputStream) {
+    private boolean downloadImg(final String urlStr, final OutputStream outputStream) {
         HttpURLConnection conn = null;
         BufferedOutputStream out = null;
         BufferedInputStream in = null;
